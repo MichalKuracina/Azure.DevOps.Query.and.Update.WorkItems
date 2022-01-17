@@ -1,11 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
     <PackageId>Azure.DevOps.Query.and.Update.WorkItems</PackageId>
     <Authors>Michal Kuracina</Authors>
     <Company />
     <Description>Helper class showcasing 'QueryByWiqlAsync' and 'UpdateWorkItemAsync' methods with explanation. With these two methods you should be able to get details on your WorkItems and update them. Utilizes PAT.</Description>
+    <RepositoryUrl>https://github.com/MichalKuracina/Azure.DevOps.Query.and.Update.WorkItems.git</RepositoryUrl>
+    <PackageTags>Azure;DevOps;WorkItem;WIQL;PAT;query;update</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
