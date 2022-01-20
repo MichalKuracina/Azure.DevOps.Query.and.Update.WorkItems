@@ -1,6 +1,8 @@
 # About
 Helper class showcasing `QueryByWiqlAsync` and `UpdateWorkItemAsync` methods with explanation. With these two methods you should be able to get details on your WorkItems and update them. Utilizes PAT.
 
+Runs with `netcoreapp3.1`, `net5.0` and `net6.0`.
+
 # Example
 
 ```csharp
@@ -8,14 +10,14 @@ using Azure.DevOps.Query.and.Update.WorkItems;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using System.Collections.Generic;
 
-namespace ConsoleApp
+namespace ConsoleApplication
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            string orgName = "yourOrganizationName";
-            string personalAccessToken = "yourToken";
+            string orgName = "name of your organization";
+            string personalAccessToken = "your PAT";
 
             var queryExecutor = new QueryExecutor(orgName, personalAccessToken);
 
@@ -24,26 +26,30 @@ namespace ConsoleApp
             string query = "Select [ID] " +
                     "From WorkItems " +
                     "Where [State] = 'To Do' " +
-                    "AND [System.TeamProject] = 'myprivateproject'";
+                    "AND [System.TeamProject] = 'name of your project'";
 
             string[] fields = { "System.Id", "System.Title", "System.Description", "System.AssignedTo" };
 
-            workItems = await queryExecutor.QueryWorkItems(query, fields);
-            
+            //workItems = await queryExecutor.QueryWorkItems(query, fields);
+            workItems = queryExecutor.QueryWorkItems(query, fields).GetAwaiter().GetResult();
+
+
             foreach (WorkItem workItem in workItems)
             {
                 string title = workItem.Fields["System.Title"].ToString();
                 string assignedTo = workItem.Fields["System.AssignedTo"].GetType().GetProperty("DisplayName").GetValue(workItem.Fields["System.AssignedTo"], null).ToString();
             }
-                        
-            await queryExecutor.UpdateField(workItems[0], "System.Description", "This was already done");
-          }
+
+            //await queryExecutor.UpdateField(workItems[0], "System.Description", "This was already done");
+            queryExecutor.UpdateField(workItems[0], "System.Description", "This was already done").GetAwaiter().GetResult();
+        }
     }
 }
 
+
 ```
 
-## Organization name
+## Organization name and project
 ``https://dev.azure.com/organization/project/``
 
 ## Personal access token
@@ -67,11 +73,4 @@ You can have also custom-made fields with specific formatting. In this case you 
 Situation: you have 3 WorkItems. None of them is assigned to person. The workItem object won't contain this column, so you will end up with exception. Make sure you apply some try-catch here.
 
 :exclamation:
-C# 7 supports async in Main. So if you don't have this replace:
-
- - workItems = **await** queryExecutor.QueryWorkItems(query, fields)
- - **await** queryExecutor.UpdateField(workItems[0], "System.Description", "This was already done")
-
-with this:
- - workItems = queryExecutor.QueryWorkItems(query, fields)**.GetAwaiter().GetResult()**
- - queryExecutor.UpdateField(workItems[0], "System.Description", "This was already done")**.GetAwaiter().GetResult()**
+`QueryWorkItems` and `UpdateField` return tasks so make sure to use await. 
